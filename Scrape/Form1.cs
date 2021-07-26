@@ -100,7 +100,7 @@ namespace Scrape
             List<Paese> paesi = new List<Paese>();
             paesi = fd.paesi();
 
-            log.LogInformation("Click paesi");
+            log.LogInformation("Click paese");
 
 
 
