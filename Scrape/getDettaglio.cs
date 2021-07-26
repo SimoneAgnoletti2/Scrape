@@ -30,7 +30,7 @@ namespace Scrape
             var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
             wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
-            Thread.Sleep(5000);
+            Thread.Sleep(6000);
 
             By squadracasa = By.ClassName("event__participant--home");
             ReadOnlyCollection<IWebElement> squadrecasa = driver.FindElements(squadracasa);
