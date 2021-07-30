@@ -8,12 +8,19 @@ namespace Scrape.Classi
 {
     public class Lega
     {
-        public string Paese { get; set; }
+        public int idPaese { get; set; }
         public string Nome { get; set; }
-        public Classifica Classifica { get; set; }
+        public string Immagine { get; set; }
+        //public Classifica Classifica { get; set; }
         public Lega()
         {
 
+        }
+        public Lega(int paese, string nome, string immagine)
+        {
+            idPaese = paese;
+            Nome = nome;
+            Immagine = immagine;
         }
     }
 }

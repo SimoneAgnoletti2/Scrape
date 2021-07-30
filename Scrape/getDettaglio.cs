@@ -24,7 +24,7 @@ namespace Scrape
 
             driver = new FirefoxDriver();
             driver.Manage().Window.Maximize();
-            driver.Url = "https://www.flashscore.it/";
+            driver.Url = "https://www.flashscore.com/";
 
             var timeout = 10000; /* Maximum wait time of 20 seconds */
             var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
@@ -34,6 +34,7 @@ namespace Scrape
 
             By squadracasa = By.ClassName("event__participant--home");
             ReadOnlyCollection<IWebElement> squadrecasa = driver.FindElements(squadracasa);
+            
 
 
             close_Browser();

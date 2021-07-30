@@ -5,18 +5,19 @@ using Scrape.Classi;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Scrape
 {
-    public class getPaesi
+    public class getLeghe
     {
         IWebDriver driver;
+        IWebDriver driver2;
         WebDriverWait wait;
-        public List<Paese> paesi()
+        public List<Lega> leghe()
         {
             driver = new FirefoxDriver();
             driver.Manage().Window.Maximize();
@@ -46,9 +47,9 @@ namespace Scrape
 
             }
 
-            List<Paese> lsc = new List<Paese>();
+            List<Lega> lsc = new List<Lega>();
 
-            lsc = clickPaese();
+            lsc = clickLeghe();
 
             close_Browser();
 
@@ -62,9 +63,9 @@ namespace Scrape
 
 
 
-        public List<Paese> clickPaese()
+        public List<Lega> clickLeghe()
         {
-            List<Paese> lsc = new List<Paese>();
+            List<Lega> lsc = new List<Lega>();
 
             By more = By.ClassName("itemMore___iBgyToa");
             var mores = driver.FindElement(more);
@@ -80,7 +81,7 @@ namespace Scrape
             {
                 mores.Click();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 wait2 = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 title = wait2.Until<IWebElement>((d) =>
@@ -98,14 +99,22 @@ namespace Scrape
             By paese = By.ClassName("item___UGGA8Fu");
             ReadOnlyCollection<IWebElement> paesi = driver.FindElements(paese);
 
+
             for (int l = 0; l < paesi.Count; l++)
             {
-                Paese pa = new Paese();
-                pa.Nome = paesi[l].Text;
-                pa.Link = pa.Nome + ".png";
-                lsc.Add(pa);
-            }
+                paesi[l].Click();
+                Thread.Sleep(2000);
+                By leghe = By.ClassName("templateHref___1W3iWwu");
+                ReadOnlyCollection<IWebElement> lega = driver.FindElements(leghe);
 
+                for (int k = 0; k < lega.Count; k++)
+                {
+                    Lega lega_classe = new Lega();
+                    lega_classe.idPaese = l+1;
+                    lega_classe.Nome = lega[k].Text;
+                }
+                paesi[l].Click();
+            }
             return lsc;
         }
     }

@@ -13,22 +13,16 @@ namespace Scrape
 {
     public partial class Form1 : Form
     {
-        ILogger log;
         public Form1()
         {
             InitializeComponent();
-            log = NullLogger.Instance;
 
         }
         private void Live_Click(object sender, EventArgs e)
         {
-            log.LogInformation("Click riempi partite di oggi");
-
             getLive fd = new getLive();
-            List<Campionato> campionati = new List<Campionato>();
-            campionati = fd.live();
-
-            log.LogInformation(string.Format("{0} {1}", "Partite recuperate: ", campionati.Count));
+            List<Partita> partite = new List<Partita>();
+            partite = fd.live();
 
             SqlConnection connection;
             string connectionString;
@@ -40,37 +34,67 @@ namespace Scrape
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    log.LogInformation(@"Connessione a pinexp.ns0.it\MIOSERVER,65004 riuscita");
-
                     SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Match", connection);
                     cmd.ExecuteNonQuery();
 
-                    for (int i = 0; i < campionati.Count; i++)
-                    {
-                        foreach (Partita partita in campionati[i].Matches)
-                        {
-                            cmd = new SqlCommand("INSERT INTO Match (Home,Away,Result,Schedule,Nation,Championship, Day) values(@Home,@Away,@Result,@Schedule,@Nation,@Championship, @Day)", connection);
-                            cmd.Parameters.AddWithValue("@Home", partita.Home);
-                            cmd.Parameters.AddWithValue("@Away", partita.Away);
-                            cmd.Parameters.AddWithValue("@Result", partita.Result);
-                            cmd.Parameters.AddWithValue("@Schedule", partita.Schedule);
-                            cmd.Parameters.AddWithValue("@Nation", campionati[i].Nation);
-                            cmd.Parameters.AddWithValue("@Championship", campionati[i].Championship);
-                            cmd.Parameters.AddWithValue("@Day", DateTime.Today.ToString());
-                            cmd.ExecuteNonQuery();
+                    string campionato = "";
 
-                            log.LogInformation(string.Format("{0}: {1} - {2} ", "Inserita partita", partita.Home, partita.Away));
+                    for (int i = 0; i < partite.Count; i++)
+                    {
+                        string query = "SELECT id FROM Lega WHERE Nome = '" + partite[i].Campionato + "'";
+                        SqlCommand command = new SqlCommand(query, connection);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                campionato = reader.GetString(0);
+                            }
                         }
+
+                        cmd = new SqlCommand("INSERT INTO Partita (id_Lega,NomeCasa,LinkCasa,NomeFuori,LinkFuori" +
+                                                                   "Orario,Risultato,Data,Quota_1,Quota_X,Quota_2,Quota_Under05" +
+                                                                   "Quota_Over05,Quota_Under15,Quota_Over15,Quota_Under25," +
+                                                                   "Quota_Over25,Quota_Under35,Quota_Over35,Quota_1X,Quota_X2," +
+                                                                   "Quota_12,Quota_Goal,Quota_NoGoal) " +
+                                                                   "values " +
+                                                                   "(@id_Lega,@NomeCasa,@LinkCasa,@NomeFuori,@LinkFuori" +
+                                                                   "@Orario,@Risultato,@Data,@Quota_1,@Quota_X,@Quota_2,@Quota_Under05" +
+                                                                   "@Quota_Over05,@Quota_Under15,@Quota_Over15,@Quota_Under25," +
+                                                                   "@Quota_Over25,@Quota_Under35,@Quota_Over35,@Quota_1X,@Quota_X2," +
+                                                                   "@Quota_12,@Quota_Goal,@Quota_NoGoal)", connection);
+                        cmd.Parameters.AddWithValue("@id_Lega", campionato);
+                        cmd.Parameters.AddWithValue("@NomeCasa", partite[i].NomeCasa);
+                        cmd.Parameters.AddWithValue("@LinkCasa", partite[i].LinkCasa);
+                        cmd.Parameters.AddWithValue("@NomeFuori", partite[i].NomeFuori);
+                        cmd.Parameters.AddWithValue("@LinkFuori", partite[i].LinkFuori);
+                        cmd.Parameters.AddWithValue("@Orario", partite[i].Orario);
+                        cmd.Parameters.AddWithValue("@Risultato", partite[i].Risultato);
+                        cmd.Parameters.AddWithValue("@Data", partite[i].Data);
+                        cmd.Parameters.AddWithValue("@Quota_1", partite[i].Quota_1);
+                        cmd.Parameters.AddWithValue("@Quota_X", partite[i].Quota_X);
+                        cmd.Parameters.AddWithValue("@Quota_2", partite[i].Quota_2);
+                        cmd.Parameters.AddWithValue("@Quota_Under05", partite[i].Quota_Under05);
+                        cmd.Parameters.AddWithValue("@Quota_Over05", partite[i].Quota_Over05);
+                        cmd.Parameters.AddWithValue("@Quota_Under15", partite[i].Quota_Under15);
+                        cmd.Parameters.AddWithValue("@Quota_Over15", partite[i].Quota_Over15);
+                        cmd.Parameters.AddWithValue("@Quota_Under25", partite[i].Quota_Under25);
+                        cmd.Parameters.AddWithValue("@Quota_Over25", partite[i].Quota_Over25);
+                        cmd.Parameters.AddWithValue("@Quota_Under35", partite[i].Quota_Under35);
+                        cmd.Parameters.AddWithValue("@Quota_Over35", partite[i].Quota_Over35);
+                        cmd.Parameters.AddWithValue("@Quota_1X", partite[i].Quota_1X);
+                        cmd.Parameters.AddWithValue("@Quota_X2", partite[i].Quota_X2);
+                        cmd.Parameters.AddWithValue("@Quota_12", partite[i].Quota_12);
+                        cmd.Parameters.AddWithValue("@Quota_Goal", partite[i].Quota_Goal);
+                        cmd.Parameters.AddWithValue("@Quota_NoGoal", partite[i].Quota_NoGoal);
+                        cmd.ExecuteNonQuery();
                     }
                 }
                 else
                 {
-                    log.LogError("Connessione non riuscita");
                 }
             }
             catch (Exception ex)
             {
-                log.LogError("Eccezione: " + ex.Message);
             }
 
             connection.Close();
@@ -88,23 +112,11 @@ namespace Scrape
             fd.dettaglio();
         }
 
-        private void ClassificheProva_Click(object sender, EventArgs e)
+        private void Leghe_Click(object sender, EventArgs e)
         {
-            getClassifiche fd = new getClassifiche();
-            fd.classifiche();
-        }
-
-        private void Paesi_Click(object sender, EventArgs e)
-        {
-            getPaesi fd = new getPaesi();
-            List<Paese> paesi = new List<Paese>();
-            paesi = fd.paesi();
-
-            log.LogInformation("Click paese");
-
-
-
-            log.LogInformation(string.Format("{0} {1}", "Paesi recuperati: ", paesi.Count));
+            getLeghe fd = new getLeghe();
+            List<Lega> leghe = new List<Lega>();
+            leghe = fd.leghe();
 
             SqlConnection connection;
             string connectionString;
@@ -116,38 +128,23 @@ namespace Scrape
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    log.LogInformation(@"Connessione a pinexp.ns0.it\MIOSERVER,65004 riuscita");
-
-                    SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Paese", connection);
+                    SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Lega", connection);
                     cmd.ExecuteNonQuery();
 
-                    foreach (Paese p in paesi)
+                    for (int i = 0; i < leghe.Count; i++)
                     {
-                        cmd = new SqlCommand("INSERT INTO Paese (Nome,LinkImage,Valida,Preferita) values(@Nome,@LinkImage,@Valida, @Preferita)", connection);
-                        cmd.Parameters.AddWithValue("@Nome", p.Nome);
-                        cmd.Parameters.AddWithValue("@LinkImage", p.Link);
-                        cmd.Parameters.AddWithValue("@Valida", "1");
-                        if(p.Nome == "Argentina" || p.Nome == "Belgio" || p.Nome == "Brasile" || p.Nome == "Francia" 
-                        || p.Nome == "Francia" || p.Nome == "Germania" || p.Nome == "Italia" || p.Nome == "Olanda" 
-                        || p.Nome == "Portogallo" || p.Nome == "Inghilterra")
-                            cmd.Parameters.AddWithValue("@Preferita", 1);
-                        else
-                        {
-                            cmd.Parameters.AddWithValue("@Preferita", 0);
-                        }
+                        cmd = new SqlCommand("INSERT INTO Lega (idPaese, Nome) values(@idPaese,@Nome)", connection);
+                        cmd.Parameters.AddWithValue("@idPaese", leghe[i].idPaese);
+                        cmd.Parameters.AddWithValue("@Nome", leghe[i].Nome);
                         cmd.ExecuteNonQuery();
-
-                        log.LogInformation(string.Format("{0}: {1} ", "Inserito paese", p.Nome));
                     }
                 }
                 else
                 {
-                    log.LogError("Connessione non riuscita");
                 }
             }
             catch (Exception ex)
             {
-                log.LogError("Eccezione: " + ex.Message);
             }
 
             connection.Close();
