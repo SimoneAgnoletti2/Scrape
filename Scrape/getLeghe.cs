@@ -112,6 +112,7 @@ namespace Scrape
                     Lega lega_classe = new Lega();
                     lega_classe.idPaese = l+1;
                     lega_classe.Nome = lega[k].Text;
+                    lsc.Add(lega_classe);
                 }
                 paesi[l].Click();
             }

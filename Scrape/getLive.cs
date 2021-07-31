@@ -88,7 +88,7 @@ namespace Scrape
 
             for (int i = 0; i < squadrecasa.Count; i++)
             {
-                if (orari[i].Ora != "Postponed")
+                if (orari[i].Ora != "Postponed" && orari[i].Ora != "Cancelled")
                 {
                     Partita p = new Partita();
                     p.NomeCasa = squadrecasa[i].Text;
@@ -97,7 +97,7 @@ namespace Scrape
                     p.Orario = orari[i].Ora.Replace("FRO", "");
                     p.PositionY = squadrecasa[i].Location.Y;
 
-                    if (p.Risultato == "-")
+                    if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
                     {
 
                         var linkid = link[i].GetAttribute("id");
@@ -109,7 +109,6 @@ namespace Scrape
                         wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
                         wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
-                        Thread.Sleep(3000);
 
                         try
                         {
@@ -118,7 +117,7 @@ namespace Scrape
                             {
                                 return d.FindElement(By.Id("onetrust-accept-btn-handler"));
                             });
-                            Thread.Sleep(5000);
+                            Thread.Sleep(1000);
 
                             By policy = By.Id("onetrust-accept-btn-handler");
                             var pol = driver.FindElement(policy);
@@ -159,7 +158,7 @@ namespace Scrape
                             if (group1[y].Text == "Odds")
                             {
                                 group1[y].Click();
-                                Thread.Sleep(2000);
+                                Thread.Sleep(1000);
 
 
                                 By groups2 = By.ClassName("tabs__tab");

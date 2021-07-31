@@ -34,7 +34,7 @@ namespace Scrape
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Match", connection);
+                    SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Partita", connection);
                     cmd.ExecuteNonQuery();
 
                     string campionato = "";
