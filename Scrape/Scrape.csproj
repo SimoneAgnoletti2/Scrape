@@ -136,6 +136,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classi\PaeseLega.cs" />
     <Compile Include="getClassifiche.cs" />
     <Compile Include="Classi\Campionato.cs" />
     <Compile Include="Classi\Classifica.cs" />
