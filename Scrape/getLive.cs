@@ -133,7 +133,7 @@ namespace Scrape
                             driver2.Manage().Window.Minimize();
                             driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
 
-                            timeout = 10000; /* Maximum wait time of 20 seconds */
+                            timeout = 100000; /* Maximum wait time of 20 seconds */
                             wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
                             wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
@@ -303,7 +303,9 @@ namespace Scrape
                     }
                 }
                 By next = By.ClassName("calendar__direction--tomorrow");
-                ReadOnlyCollection<IWebElement> nex = driver.FindElements(next);
+                IWebElement nex = driver.FindElement(next);
+                nex.Click();
+
                 if (giorno == 6)
                 {
                     close_Browser();
