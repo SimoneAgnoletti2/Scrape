@@ -133,7 +133,7 @@ namespace Scrape
                             driver2.Manage().Window.Minimize();
                             driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
 
-                            timeout = 100000; /* Maximum wait time of 20 seconds */
+                            timeout = 20000; /* Maximum wait time of 20 seconds */
                             wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
                             wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
@@ -165,6 +165,7 @@ namespace Scrape
                             By leghe = By.TagName("a");
                             IWebElement lega = legadiv.FindElement(leghe);
                             p.Campionato = lega.Text;
+                            p.IdDiv = linkid.Replace("g_1_", "");
 
                             //prendo le due immagini delle squadre che stanno giocando
                             By linksdiv = By.ClassName("participantImage___2Oi0lJ_");
@@ -192,7 +193,7 @@ namespace Scrape
                                 if (group1[y].Text == "Odds")
                                 {
                                     group1[y].Click();
-                                    Thread.Sleep(1000);
+                                    Thread.Sleep(5000);
 
                                     //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
                                     By groups2 = By.ClassName("tabs__tab");
@@ -342,18 +343,19 @@ namespace Scrape
                     }
                     SqlCommand command;
 
-                    command = new SqlCommand("INSERT INTO Partita (id_Lega,NomeCasa,LinkCasa,NomeFuori,LinkFuori," +
+                    command = new SqlCommand("INSERT INTO Partita (id_Lega,idDiv,NomeCasa,LinkCasa,NomeFuori,LinkFuori," +
                                                                "Orario,Risultato,Data,Quota_1,Quota_X,Quota_2,Quota_Under05," +
                                                                "Quota_Over05,Quota_Under15,Quota_Over15,Quota_Under25," +
                                                                "Quota_Over25,Quota_Under35,Quota_Over35,Quota_1X,Quota_X2," +
                                                                "Quota_12,Quota_Goal,Quota_NoGoal) " +
                                                                "values " +
-                                                               "(@id_Lega,@NomeCasa,@LinkCasa,@NomeFuori,@LinkFuori," +
+                                                               "(@id_Lega,@idDiv,@NomeCasa,@LinkCasa,@NomeFuori,@LinkFuori," +
                                                                "@Orario,@Risultato,@Data,@Quota_1,@Quota_X,@Quota_2,@Quota_Under05," +
                                                                "@Quota_Over05,@Quota_Under15,@Quota_Over15,@Quota_Under25," +
                                                                "@Quota_Over25,@Quota_Under35,@Quota_Over35,@Quota_1X,@Quota_X2," +
                                                                "@Quota_12,@Quota_Goal,@Quota_NoGoal)", connection);
                     command.Parameters.AddWithValue("@id_Lega", campionato);
+                    command.Parameters.AddWithValue("@idDiv", partita.IdDiv);
                     command.Parameters.AddWithValue("@NomeCasa", partita.NomeCasa);
                     command.Parameters.AddWithValue("@LinkCasa", partita.LinkCasa);
                     command.Parameters.AddWithValue("@NomeFuori", partita.NomeFuori);

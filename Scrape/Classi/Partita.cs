@@ -12,6 +12,8 @@ namespace Scrape.Classi
         public string Paese { get; set; }
         public int IdCampionato { get; set; }
         public string Campionato { get; set; }
+        public string IdDiv { get; set; }
+
         public string NomeCasa { get; set; }
         public string LinkCasa { get; set; }
         public string NomeFuori { get; set; }
