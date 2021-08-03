@@ -235,7 +235,8 @@ namespace Scrape
                                                 p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
-                                                p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);                                                p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
+                                                p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);    
+                                                p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture);                                                p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
                                                 p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
                                             }
