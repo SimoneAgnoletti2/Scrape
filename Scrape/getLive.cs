@@ -299,6 +299,7 @@ namespace Scrape
                             }
                             inserisciInDatabase(p);
                             driver2.Quit();
+                            driver2.Dispose();
                         }
                         partite.Add(p);
                     }
