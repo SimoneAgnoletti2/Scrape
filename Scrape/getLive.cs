@@ -30,28 +30,7 @@ namespace Scrape
             connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
             connection = new SqlConnection(connectionString);
 
-            try
-            {
-                connection.Open();
-                if (connection.State == ConnectionState.Open)
-                {
-                    string query = "select P.id as idPaese, P.Nome as NomePaese, L.id as idLega, L.Nome as NomeLega from Lega L inner join Paese P on P.id = L.idPaese";
-                    SqlCommand command = new SqlCommand(query, connection);
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            PaeseLega l = new PaeseLega();
-                            l.IdPaese = reader.GetInt32(0);
-                            l.Paese = reader.GetString(1);
-                            l.IdCampionato = reader.GetInt32(2);
-                            l.Campionato = reader.GetString(3);
-                            paeselega.Add(l);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) { }
+            getPaesiLeghe();
 
             driver = new FirefoxDriver();
             driver.Manage().Window.Minimize();
@@ -116,19 +95,36 @@ namespace Scrape
 
                 for (int i = 0; i < squadrecasa.Count; i++)
                 {
-                    if (orari[i].Ora != "Postponed" && orari[i].Ora != "Cancelled")
-                    {
-                        Partita p = new Partita();
-                        p.NomeCasa = squadrecasa[i].Text;
-                        p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
-                        p.NomeFuori = squadreospite[i].Text;
-                        p.Orario = orari[i].Ora.Replace("FRO", "");
-                        p.PositionY = squadrecasa[i].Location.Y;
+                    //apro la pagina dettaglio di ogni partita
+                    var linkid = link[i].GetAttribute("id");
 
-                        if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
+
+                    if(PartitaDaScaricare(linkid.Replace("g_1_", "")))
+                    {
+                        if (orari[i].Ora != "Postponed" && orari[i].Ora != "Cancelled")
                         {
-                            //apro la pagina dettaglio di ogni partita
-                            var linkid = link[i].GetAttribute("id");
+                            Partita p = new Partita();
+                            p.NomeCasa = squadrecasa[i].Text;
+                            p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
+                            p.NomeFuori = squadreospite[i].Text;
+                            p.Orario = orari[i].Ora.Replace("FRO", "");
+                            if(p.Orario == "Finished" || p.Orario == "After Pen.")
+                            {
+                                p.Stato = "FINITA";
+                            }
+                            else if(p.Risultato == "-")
+                            {
+                                p.Stato = "DA_INIZIARE";
+                            }
+                            else
+                            {
+                                p.Stato = "IN_CORSO";
+                            }
+                            p.PositionY = squadrecasa[i].Location.Y;
+
+                            //if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
+                            //{ 
+
                             driver2 = new FirefoxDriver();
                             driver2.Manage().Window.Minimize();
                             driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
@@ -210,7 +206,7 @@ namespace Scrape
 
                                             try
                                             {
-                                                p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture); 
+                                                p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_X = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
                                             }
@@ -235,8 +231,8 @@ namespace Scrape
                                                 p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
-                                                p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);    
-                                                p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture);                                                p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
+                                                p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);
+                                                p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture); p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
                                                 p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
                                                 p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
                                             }
@@ -298,11 +294,22 @@ namespace Scrape
                                     break;
                                 }
                             }
-                            inserisciInDatabase(p);
+                            var scarica = verificaPartiteDaScaricare(linkid.Replace("g_1_", ""));
+                            if (!scarica)
+                            {
+                                aggiornaInDatabase(p);
+                            }
+                            else
+                            {
+                                inserisciInDatabase(p);
+                            }
+
+
                             driver2.Quit();
                             driver2.Dispose();
+
+                            //}
                         }
-                        partite.Add(p);
                     }
                 }
                 By next = By.ClassName("calendar__direction--tomorrow");
@@ -345,18 +352,19 @@ namespace Scrape
                     }
                     SqlCommand command;
 
-                    command = new SqlCommand("INSERT INTO Partita (id_Lega,idDiv,NomeCasa,LinkCasa,NomeFuori,LinkFuori," +
+                    command = new SqlCommand("INSERT INTO Partita (id_Lega, Stato,idDiv,NomeCasa,LinkCasa,NomeFuori,LinkFuori," +
                                                                "Orario,Risultato,Data,Quota_1,Quota_X,Quota_2,Quota_Under05," +
                                                                "Quota_Over05,Quota_Under15,Quota_Over15,Quota_Under25," +
                                                                "Quota_Over25,Quota_Under35,Quota_Over35,Quota_1X,Quota_X2," +
                                                                "Quota_12,Quota_Goal,Quota_NoGoal) " +
                                                                "values " +
-                                                               "(@id_Lega,@idDiv,@NomeCasa,@LinkCasa,@NomeFuori,@LinkFuori," +
+                                                               "(@id_Lega,@Stato,@idDiv,@NomeCasa,@LinkCasa,@NomeFuori,@LinkFuori," +
                                                                "@Orario,@Risultato,@Data,@Quota_1,@Quota_X,@Quota_2,@Quota_Under05," +
                                                                "@Quota_Over05,@Quota_Under15,@Quota_Over15,@Quota_Under25," +
                                                                "@Quota_Over25,@Quota_Under35,@Quota_Over35,@Quota_1X,@Quota_X2," +
                                                                "@Quota_12,@Quota_Goal,@Quota_NoGoal)", connection);
                     command.Parameters.AddWithValue("@id_Lega", campionato);
+                    command.Parameters.AddWithValue("@Stato", partita.Stato);
                     command.Parameters.AddWithValue("@idDiv", partita.IdDiv);
                     command.Parameters.AddWithValue("@NomeCasa", partita.NomeCasa);
                     command.Parameters.AddWithValue("@LinkCasa", partita.LinkCasa);
@@ -392,6 +400,195 @@ namespace Scrape
             }
 
             connection.Close();
+        }
+
+        public void aggiornaInDatabase(Partita partita)
+        {
+            SqlConnection connection;
+            string connectionString;
+            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
+            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    int campionato = 0;
+                    foreach (var nomelega in paeselega)
+                    {
+                        if (partita.Campionato == nomelega.Campionato && partita.Paese.ToLower() == nomelega.Paese.ToLower())
+                        {
+                            campionato = nomelega.IdCampionato;
+                        }
+                        else if (partita.Campionato.Contains(nomelega.Campionato) && partita.Paese.ToLower() == nomelega.Paese.ToLower())
+                        {
+                            campionato = nomelega.IdCampionato;
+                        }
+                        else if (nomelega.Campionato.Contains(partita.Campionato) && partita.Paese.ToLower() == nomelega.Paese.ToLower())
+                        {
+                            campionato = nomelega.IdCampionato;
+                        }
+                    }
+                    SqlCommand command;
+                    string query = "UPDATE Partita SET " +
+                        "id_Lega = @id_Lega" +
+                        "Stato = @Stato" +
+                        ",idDiv = @idDiv" +
+                        ",NomeCasa = @NomeCasa" +
+                        ",LinkCasa = @LinkCasa" +
+                        ",NomeFuori = @NomeFuori" +
+                        ",LinkFuori = @LinkFuori" +
+                        ",Orario = @Orario" +
+                        ",Risultato = @Risultato" +
+                        ",Data = @Data" +
+                        ",Quota_1 = @Quota_1" +
+                        ",Quota_X = @Quota_X" +
+                        ",Quota_2 = @Quota_2" +
+                        ",Quota_Under05 = @Quota_Under05" +
+                        ",Quota_Over05 = @Quota_Over05" +
+                        ",Quota_Under15 = @Quota_Under15" +
+                        ",Quota_Over15 = @Quota_Over15" +
+                        ",Quota_Under25 = @Quota_Under25" +
+                        ",Quota_Over25 = @Quota_Over25" +
+                        ",Quota_Under35 = @Quota_Under35" +
+                        ",Quota_Over35 = Quota_Over35" +
+                        ",Quota_1X = @Quota_1X" +
+                        ",Quota_X2 = @Quota_X2," +
+                        "Quota_12 = @Quota_12" +
+                        ",Quota_Goal = @Quota_Goal" +
+                        ",Quota_NoGoal = @Quota_NoGoal" +
+                        " WHERE idDiv = '" + partita.IdDiv +  "'";
+                    command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@id_Lega", campionato);
+                    command.Parameters.AddWithValue("@Stato", partita.Stato);
+                    command.Parameters.AddWithValue("@idDiv", partita.IdDiv);
+                    command.Parameters.AddWithValue("@NomeCasa", partita.NomeCasa);
+                    command.Parameters.AddWithValue("@LinkCasa", partita.LinkCasa);
+                    command.Parameters.AddWithValue("@NomeFuori", partita.NomeFuori);
+                    command.Parameters.AddWithValue("@LinkFuori", partita.LinkFuori);
+                    command.Parameters.AddWithValue("@Orario", partita.Orario);
+                    command.Parameters.AddWithValue("@Risultato", partita.Risultato);
+                    command.Parameters.AddWithValue("@Data", partita.Data);
+                    command.Parameters.AddWithValue("@Quota_1", partita.Quota_1);
+                    command.Parameters.AddWithValue("@Quota_X", partita.Quota_X);
+                    command.Parameters.AddWithValue("@Quota_2", partita.Quota_2);
+                    command.Parameters.AddWithValue("@Quota_Under05", partita.Quota_Under05);
+                    command.Parameters.AddWithValue("@Quota_Over05", partita.Quota_Over05);
+                    command.Parameters.AddWithValue("@Quota_Under15", partita.Quota_Under15);
+                    command.Parameters.AddWithValue("@Quota_Over15", partita.Quota_Over15);
+                    command.Parameters.AddWithValue("@Quota_Under25", partita.Quota_Under25);
+                    command.Parameters.AddWithValue("@Quota_Over25", partita.Quota_Over25);
+                    command.Parameters.AddWithValue("@Quota_Under35", partita.Quota_Under35);
+                    command.Parameters.AddWithValue("@Quota_Over35", partita.Quota_Over35);
+                    command.Parameters.AddWithValue("@Quota_1X", partita.Quota_1X);
+                    command.Parameters.AddWithValue("@Quota_X2", partita.Quota_X2);
+                    command.Parameters.AddWithValue("@Quota_12", partita.Quota_12);
+                    command.Parameters.AddWithValue("@Quota_Goal", partita.Quota_Goal);
+                    command.Parameters.AddWithValue("@Quota_NoGoal", partita.Quota_NoGoal);
+                    command.ExecuteNonQuery();
+                }
+                else
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            connection.Close();
+        }
+
+        public void getPaesiLeghe()
+        {
+            SqlConnection connection;
+            string connectionString;
+            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
+            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    string query = "select P.id as idPaese, P.Nome as NomePaese, L.id as idLega, L.Nome as NomeLega from Lega L inner join Paese P on P.id = L.idPaese";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PaeseLega l = new PaeseLega();
+                            l.IdPaese = reader.GetInt32(0);
+                            l.Paese = reader.GetString(1);
+                            l.IdCampionato = reader.GetInt32(2);
+                            l.Campionato = reader.GetString(3);
+                            paeselega.Add(l);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { }
+            connection.Close();
+        }
+
+        public bool verificaPartiteDaScaricare(string div)
+        {
+            SqlConnection connection;
+            string connectionString;
+            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
+            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "'";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int sino = reader.GetInt32(0);
+                            if (sino > 0)
+                                return false;
+                            else
+                                return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { }
+            connection.Close();
+            return false;
+        }
+
+        public bool PartitaDaScaricare(string div)
+        {
+            SqlConnection connection;
+            string connectionString;
+            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
+            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "' AND (Orario <> 'Finished' OR Orario <> 'After Pen.'";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int sino = reader.GetInt32(0);
+                            if (sino > 0)
+                                return false;
+                            else
+                                return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { }
+            connection.Close();
+            return false;
         }
 
         public void close_Browser()

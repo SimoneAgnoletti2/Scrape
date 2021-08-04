@@ -12,6 +12,7 @@ namespace Scrape.Classi
         public string Paese { get; set; }
         public int IdCampionato { get; set; }
         public string Campionato { get; set; }
+        public string Stato { get; set; }
         public string IdDiv { get; set; }
 
         public string NomeCasa { get; set; }
@@ -37,7 +38,6 @@ namespace Scrape.Classi
         public double Quota_12 { get; set; }
         public double Quota_Goal { get; set; }
         public double Quota_NoGoal { get; set; }
-        //public string link { get; set; }
         public int PositionY { get; set; }
 
         public Partita()

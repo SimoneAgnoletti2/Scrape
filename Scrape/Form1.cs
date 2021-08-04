@@ -20,23 +20,6 @@ namespace Scrape
         }
         private void Live_Click(object sender, EventArgs e)
         {
-            SqlConnection connection;
-            string connectionString;
-            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
-            connection = new SqlConnection(connectionString);
-
-            try
-            {
-                connection.Open();
-                if (connection.State == ConnectionState.Open)
-                {
-                    SqlCommand cmd = new SqlCommand("TRUNCATE TABLE Partita", connection);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex) { }
-            connection.Close();
-
             getLive fd = new getLive();
             List<Partita> partite = new List<Partita>();
             fd.live();
