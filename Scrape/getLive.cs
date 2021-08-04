@@ -42,7 +42,7 @@ namespace Scrape
                 var timeout = 10000; /* Maximum wait time of 20 seconds */
                 var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
                 wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
-                Thread.Sleep(10000);
+                Thread.Sleep(1000);
 
                 try
                 {
@@ -86,8 +86,6 @@ namespace Scrape
                 ReadOnlyCollection<IWebElement> nazioni = driver.FindElements(nazione);
 
                 //prendo la parte di id per il reindirizzamento ai dettagli della partita
-                By links = By.ClassName("event__match");
-                ReadOnlyCollection<IWebElement> link = driver.FindElements(links);
 
                 //unisco partite cominciate e partite terminate o non iniziate in ordine come in pagina
                 List<Orario> orari = new List<Orario>();
@@ -95,6 +93,8 @@ namespace Scrape
 
                 for (int i = 0; i < squadrecasa.Count; i++)
                 {
+                    By links = By.ClassName("event__match");
+                    ReadOnlyCollection<IWebElement> link = driver.FindElements(links);
                     //apro la pagina dettaglio di ogni partita
                     var linkid = link[i].GetAttribute("id");
 
@@ -112,9 +112,10 @@ namespace Scrape
                             {
                                 p.Stato = "FINITA";
                             }
-                            else if(p.Risultato == "-")
+                            else if(p.Risultato == "-" || p.Risultato == "PREVIEW" || p.Risultato == "")
                             {
                                 p.Stato = "DA_INIZIARE";
+                                p.Risultato = "-";
                             }
                             else
                             {
@@ -129,7 +130,7 @@ namespace Scrape
                             driver2.Manage().Window.Minimize();
                             driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
 
-                            timeout = 20000; /* Maximum wait time of 20 seconds */
+                            timeout = 10000; /* Maximum wait time of 20 seconds */
                             wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
                             wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
@@ -180,7 +181,7 @@ namespace Scrape
                             //prendo data e ora avvenimento
                             By dataora = By.ClassName("startTime___2oy0czV");
                             IWebElement dateora = driver2.FindElement(dataora);
-                            p.Data = dateora.Text;
+                            p.Data = dateora.Text.Split(' ')[0];
 
 
                             for (int y = 0; y < group1.Count; y++)
@@ -189,7 +190,6 @@ namespace Scrape
                                 if (group1[y].Text == "Odds")
                                 {
                                     group1[y].Click();
-                                    Thread.Sleep(5000);
 
                                     //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
                                     By groups2 = By.ClassName("tabs__tab");
@@ -571,7 +571,7 @@ namespace Scrape
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "' AND (Orario <> 'Finished' OR Orario <> 'After Pen.'";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
+                    string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "' AND (Orario <> 'Finished' OR Orario <> 'After Pen.')";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
                     SqlCommand command = new SqlCommand(query, connection);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
