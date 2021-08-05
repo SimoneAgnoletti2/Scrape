@@ -190,6 +190,7 @@ namespace Scrape
                                 if (group1[y].Text == "Odds")
                                 {
                                     group1[y].Click();
+                                    Thread.Sleep(1000);
 
                                     //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
                                     By groups2 = By.ClassName("tabs__tab");
@@ -432,7 +433,7 @@ namespace Scrape
                     SqlCommand command;
                     string query = "UPDATE Partita SET " +
                         "id_Lega = @id_Lega" +
-                        "Stato = @Stato" +
+                        ",Stato = @Stato" +
                         ",idDiv = @idDiv" +
                         ",NomeCasa = @NomeCasa" +
                         ",LinkCasa = @LinkCasa" +
@@ -579,9 +580,9 @@ namespace Scrape
                         {
                             int sino = reader.GetInt32(0);
                             if (sino > 0)
-                                return false;
-                            else
                                 return true;
+                            else
+                                return false;
                         }
                     }
                 }
