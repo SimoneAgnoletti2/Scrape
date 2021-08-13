@@ -25,19 +25,15 @@ namespace Scrape
 
         public void live()
         {
-            SqlConnection connection;
-            string connectionString;
-            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
-            connection = new SqlConnection(connectionString);
-
-            getPaesiLeghe();
-
-            driver = new FirefoxDriver();
-            driver.Manage().Window.Minimize();
-            driver.Url = "https://www.flashscore.com/";
-
-            for (int giorno = 0; giorno < 7; giorno++)
+            do
             {
+                pulisci();
+
+                getPaesiLeghe();
+
+                driver = new FirefoxDriver();
+                driver.Manage().Window.Maximize();
+                driver.Url = "https://www.flashscore.com/";
 
                 var timeout = 10000; /* Maximum wait time of 20 seconds */
                 var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
@@ -62,502 +58,675 @@ namespace Scrape
 
                 }
 
-                Partita p = new Partita();
 
-                //tutte i nodi squadre di casa
-                By squadracasa = By.ClassName("event__participant--home");
-                ReadOnlyCollection<IWebElement> squadrecasa = driver.FindElements(squadracasa);
-
-                //tutti i nodi risultati
-                By risultato = By.ClassName("event__scores");
-                ReadOnlyCollection<IWebElement> risultati = driver.FindElements(risultato);
-
-                //tutti i nodi squadre ospiti
-                By squadraospite = By.ClassName("event__participant--away");
-                ReadOnlyCollection<IWebElement> squadreospite = driver.FindElements(squadraospite);
-
-                //tutti i nodi squadre che devono ancora giocare o stanno giocando
-                By time = By.ClassName("event__time");
-                ReadOnlyCollection<IWebElement> times = driver.FindElements(time);
-
-                //tutti i nodi squadre che hanno finito di giocare
-                By not_time = By.ClassName("event__stage--block");
-                ReadOnlyCollection<IWebElement> not_times = driver.FindElements(not_time);
-
-                //tutte i nodi squadre di casa
-                By nazione = By.ClassName("event__title--type");
-                ReadOnlyCollection<IWebElement> nazioni = driver.FindElements(nazione);
-
-                //prendo la parte di id per il reindirizzamento ai dettagli della partita
-
-                //unisco partite cominciate e partite terminate o non iniziate in ordine come in pagina
-                List<Orario> orari = new List<Orario>();
-                orari = ordinaOrari(times, not_times);
-
-                for (int i = 0; i < squadrecasa.Count; i++)
+                By prev = By.ClassName("calendar__direction--yesterday");
+                IWebElement pre = driver.FindElement(prev);
+                try
                 {
-                    By links = By.ClassName("event__match");
-                    ReadOnlyCollection<IWebElement> link = driver.FindElements(links);
-                    //apro la pagina dettaglio di ogni partita
-                    var linkid = link[i].GetAttribute("id");
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                try
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep(3000);
+                    pre.Click();
+                }
 
-
-                    if(!PartitaDaScaricare(linkid.Replace("g_1_", "")) || verificaPartiteDaScaricare(linkid.Replace("g_1_", "")))
+                for (int giorno = 0; giorno < 14; giorno++)
+                {
+                    if (giorno == 7)
                     {
-                        if (orari[i].Ora != "Postponed" && orari[i].Ora != "Cancelled")
+                        try
                         {
-                            try
+                            driver.Quit();
+                        }
+                        catch (Exception ex)
+                        {
+                            driver.Quit();
+                        }
+                        driver = new FirefoxDriver();
+                        driver.Manage().Window.Maximize();
+                        driver.Url = "https://www.flashscore.com/";
+
+                        timeout = 10000; /* Maximum wait time of 20 seconds */
+                        wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
+                        wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                        Thread.Sleep(1000);
+
+                        try
+                        {
+                            WebDriverWait wait2 = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                            IWebElement title = wait2.Until<IWebElement>((d) =>
                             {
-                                p.NomeCasa = squadrecasa[i].Text;
-                            }
-                            catch (Exception ex)
+                                return d.FindElement(By.Id("onetrust-accept-btn-handler"));
+                            });
+                            Thread.Sleep(5000);
+
+                            By policy = By.Id("onetrust-accept-btn-handler");
+                            var pol = driver.FindElement(policy);
+                            pol.Click();
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    try
+                    {
+                        WebDriverWait wait2 = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                        IWebElement title = wait2.Until<IWebElement>((d) =>
+                        {
+                            return d.FindElement(By.Id("onetrust-accept-btn-handler"));
+                        });
+                        Thread.Sleep(5000);
+
+                        By policy = By.Id("onetrust-accept-btn-handler");
+                        var pol = driver.FindElement(policy);
+                        pol.Click();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    Partita p = new Partita();
+
+                    //tutte i nodi squadre di casa
+                    By squadracasa = By.ClassName("event__participant--home");
+                    ReadOnlyCollection<IWebElement> squadrecasa = driver.FindElements(squadracasa);
+
+                    //tutti i nodi risultati
+                    By risultato = By.ClassName("event__scores");
+                    ReadOnlyCollection<IWebElement> risultati = driver.FindElements(risultato);
+
+                    //tutti i nodi squadre ospiti
+                    By squadraospite = By.ClassName("event__participant--away");
+                    ReadOnlyCollection<IWebElement> squadreospite = driver.FindElements(squadraospite);
+
+                    //tutti i nodi squadre che devono ancora giocare o stanno giocando
+                    By time = By.ClassName("event__time");
+                    ReadOnlyCollection<IWebElement> times = driver.FindElements(time);
+
+                    //tutti i nodi squadre che hanno finito di giocare
+                    By not_time = By.ClassName("event__stage--block");
+                    ReadOnlyCollection<IWebElement> not_times = driver.FindElements(not_time);
+
+                    //tutte i nodi squadre di casa
+                    By nazione = By.ClassName("event__title--type");
+                    ReadOnlyCollection<IWebElement> nazioni = driver.FindElements(nazione);
+
+                    //prendo la parte di id per il reindirizzamento ai dettagli della partita
+
+                    //unisco partite cominciate e partite terminate o non iniziate in ordine come in pagina
+                    List<Orario> orari = new List<Orario>();
+                    orari = ordinaOrari(times, not_times);
+
+                    for (int i = 0; i < squadrecasa.Count; i++)
+                    {
+                        By links = By.ClassName("event__match");
+                        ReadOnlyCollection<IWebElement> link = driver.FindElements(links);
+                        //apro la pagina dettaglio di ogni partita
+                        var linkid = link[i].GetAttribute("id");
+
+
+                        if ("Oprz1aZu" == linkid.Replace("g_1_", ""))
+                        {
+                        }
+                        if (!orari[i].Ora.Contains("FRO"))
+                        {
+                            if (!PartitaDaScaricare(linkid.Replace("g_1_", "")) || verificaPartiteDaScaricare(linkid.Replace("g_1_", "")))
                             {
-                                squadracasa = By.ClassName("event__participant--home");
-                                squadrecasa = driver.FindElements(squadracasa);
-                                p.NomeCasa = squadrecasa[i].Text;
-                            }
-
-                            try
-                            {
-                                p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
-                            }
-                            catch (Exception ex)
-                            {
-                                risultato = By.ClassName("event__scores");
-                                risultati = driver.FindElements(risultato);
-                                p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
-                            }
-
-                            try
-                            {
-                                p.NomeFuori = squadreospite[i].Text;
-                            }
-                            catch (Exception ex)
-                            {
-                                squadraospite = By.ClassName("event__participant--away");
-                                squadreospite = driver.FindElements(squadraospite);
-                                p.NomeFuori = squadreospite[i].Text;
-                            }
-
-                            try
-                            {
-                                p.Orario = orari[i].Ora.Replace("FRO", "");
-                            }
-                            catch (Exception ex)
-                            {
-                                time = By.ClassName("event__time");
-                                times = driver.FindElements(time);
-
-                                //tutti i nodi squadre che hanno finito di giocare
-                                not_time = By.ClassName("event__stage--block");
-                                not_times = driver.FindElements(not_time);
-
-                                orari = new List<Orario>();
-                                orari = ordinaOrari(times, not_times);
-
-                                p.Orario = orari[i].Ora.Replace("FRO", "");
-                            }
-
-                            if(p.Orario == "Finished" || p.Orario == "After Pen.")
-                            {
-                                p.Stato = "FINITA";
-                            }
-                            else if(p.Risultato == "-" || p.Risultato == "PREVIEW" || p.Risultato == "")
-                            {
-                                p.Stato = "DA_INIZIARE";
-                                p.Risultato = "-";
-                            }
-                            else
-                            {
-                                p.Stato = "IN_CORSO";
-                            }
-
-                            try
-                            {
-                                p.PositionY = squadrecasa[i].Location.Y;
-                            }
-                            catch(Exception ex)
-                            {
-                                squadracasa = By.ClassName("event__participant--home");
-                                squadrecasa = driver.FindElements(squadracasa);
-                                p.PositionY = squadrecasa[i].Location.Y;
-                            }
-
-                            //if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
-                            //{ 
-
-                            try
-                            {
-                                driver2 = new FirefoxDriver();
-                                driver2.Manage().Window.Minimize();
-                                driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
-
-                                timeout = 10000; /* Maximum wait time of 20 seconds */
-                                wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
-                                wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
-
-
-                                //prendo il nodo che mi dice il nome campionato
-                                By leghediv = By.ClassName("country___24Qe-aj");
-                                IWebElement legadiv = driver2.FindElement(leghediv);
-                                p.Paese = legadiv.Text.Split(':')[0];
-
-                                By leghe = By.TagName("a");
-                                IWebElement lega = legadiv.FindElement(leghe);
-                                p.Campionato = lega.Text;
-                                p.IdDiv = linkid.Replace("g_1_", "");
-
-                                //prendo le due immagini delle squadre che stanno giocando
-                                By linksdiv = By.ClassName("participantImage___2Oi0lJ_");
-                                ReadOnlyCollection<IWebElement> linkdiv = driver2.FindElements(linksdiv);
-                                By linkscasa = By.TagName("img");
-                                ReadOnlyCollection<IWebElement> linkcasa = linkdiv[0].FindElements(linkscasa);
-                                By linksfuori = By.TagName("img");
-                                ReadOnlyCollection<IWebElement> linkfuori = linkdiv[1].FindElements(linkscasa);
-                                p.LinkCasa = linkcasa[0].GetAttribute("src");
-                                p.LinkFuori = linkfuori[0].GetAttribute("src");
-
-                                //prendo le tab nel dettaglio (per cercare le odds)
-                                By groups1 = By.ClassName("tabs__tab");
-                                ReadOnlyCollection<IWebElement> group1 = driver2.FindElements(groups1);
-
-                                //prendo data e ora avvenimento
-                                By dataora = By.ClassName("startTime___2oy0czV");
-                                IWebElement dateora = driver2.FindElement(dataora);
-                                p.Data = dateora.Text.Split(' ')[0];
-
-
-                                for (int y = 0; y < group1.Count; y++)
+                                if (orari[i].Ora != "Postponed" && orari[i].Ora != "Cancelled")
                                 {
-                                    //apro le odds
-                                    if (group1[y].Text == "Odds")
+                                    try
                                     {
-                                        group1[y].Click();
-                                        Thread.Sleep(1000);
-
-                                        //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
-                                        By groups2 = By.ClassName("tabs__tab");
-                                        ReadOnlyCollection<IWebElement> group2 = driver2.FindElements(groups2);
-
-
-                                        for (int w = 0; w < group2.Count; w++)
-                                        {
-                                            if (group2[w].Text == "1X2 odds")
-                                            {
-                                                //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
-
-                                                try
-                                                {
-                                                    p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_X = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    p.Quota_1 = 0;
-                                                    p.Quota_X = 0;
-                                                    p.Quota_2 = 0;
-                                                }
-                                            }
-
-                                            //prendo tutti nodi con le quote under e over e popolo le prime 8 che trovo (da rivedere)
-                                            if (group2[w].Text == "O/U")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
-
-                                                try
-                                                {
-                                                    p.Quota_Over05 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture); p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
-                                                    p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    p.Quota_Over05 = 0;
-                                                    p.Quota_Under05 = 0;
-                                                    p.Quota_Over15 = 0;
-                                                    p.Quota_Under15 = 0;
-                                                    p.Quota_Over25 = 0;
-                                                    p.Quota_Under25 = 0;
-                                                    p.Quota_Over35 = 0;
-                                                    p.Quota_Under35 = 0;
-                                                }
-                                            }
-
-                                            //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
-                                            if (group2[w].Text == "DC")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
-
-                                                try
-                                                {
-                                                    p.Quota_1X = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_12 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_X2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    p.Quota_1X = 0;
-                                                    p.Quota_12 = 0;
-                                                    p.Quota_X2 = 0;
-                                                }
-                                            }
-
-                                            //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
-                                            if (group2[w].Text == "BTS")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
-
-                                                try
-                                                {
-                                                    p.Quota_Goal = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_NoGoal = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    p.Quota_Goal = 0;
-                                                    p.Quota_NoGoal = 0;
-                                                }
-                                            }
-                                        }
-
-                                        //metto un break perchè ho già preso tutto ciò che mi interessa ignorando le altre tabs
-                                        break;
+                                        p.NomeCasa = squadrecasa[i].Text;
                                     }
-                                }
-                                var scarica = verificaPartiteDaScaricare(linkid.Replace("g_1_", ""));
-                                if (!scarica)
-                                {
-                                    aggiornaInDatabase(p);
+                                    catch (Exception ex)
+                                    {
+                                        squadracasa = By.ClassName("event__participant--home");
+                                        squadrecasa = driver.FindElements(squadracasa);
+                                        p.NomeCasa = squadrecasa[i].Text;
+                                    }
+
+                                    try
+                                    {
+                                        p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        risultato = By.ClassName("event__scores");
+                                        risultati = driver.FindElements(risultato);
+                                        p.Risultato = risultati[i].Text.Replace("\n", "").Replace("\r", "");
+                                    }
+
+                                    try
+                                    {
+                                        p.NomeFuori = squadreospite[i].Text;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        squadraospite = By.ClassName("event__participant--away");
+                                        squadreospite = driver.FindElements(squadraospite);
+                                        p.NomeFuori = squadreospite[i].Text;
+                                    }
+
+                                    try
+                                    {
+                                        p.Orario = orari[i].Ora.Replace("FRO", "");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        time = By.ClassName("event__time");
+                                        times = driver.FindElements(time);
+
+                                        //tutti i nodi squadre che hanno finito di giocare
+                                        not_time = By.ClassName("event__stage--block");
+                                        not_times = driver.FindElements(not_time);
+
+                                        orari = new List<Orario>();
+                                        orari = ordinaOrari(times, not_times);
+
+                                        p.Orario = orari[i].Ora.Replace("FRO", "");
+                                    }
+
+                                    if (p.Orario == "Finished" || p.Orario == "After Pen." || p.Orario == "After ET" ||
+                                        p.Orario == "Abandoned" || p.Orario == "Awarded" || p.Orario == "Walkover" || p.Orario == "Delayed")
+                                    {
+                                        p.Stato = "FINITA";
+                                    }
+                                    else if (p.Risultato == "-" || p.Risultato == "PREVIEW" || p.Risultato == "")
+                                    {
+                                        p.Stato = "DA_INIZIARE";
+                                        p.Risultato = "-";
+                                    }
+                                    else
+                                    {
+                                        p.Stato = "IN_CORSO";
+                                    }
+
+                                    try
+                                    {
+                                        p.PositionY = squadrecasa[i].Location.Y;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        squadracasa = By.ClassName("event__participant--home");
+                                        squadrecasa = driver.FindElements(squadracasa);
+                                        p.PositionY = squadrecasa[i].Location.Y;
+                                    }
+
+                                    //if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
+                                    //{ 
                                 }
                                 else
-                                {
-                                    inserisciInDatabase(p);
-                                }
-
-
-                                try
-                                {
-                                    driver2.Quit();
-                                    driver2.Dispose();
-                                }
-                                catch (Exception ex)
-                                {
-                                    driver2.Dispose();
-                                }
-                            }
-                            catch(Exception ex)
-                            {
-                                try
-                                {
-                                    driver2.Quit();
-                                    driver2.Dispose();
-                                }
-                                catch (Exception ex2)
-                                {
-                                    driver2.Dispose();
-                                }
-                                driver2 = new FirefoxDriver();
-                                driver2.Manage().Window.Minimize();
-                                driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
-
-                                timeout = 10000; /* Maximum wait time of 20 seconds */
-                                wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
-                                wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
-
-
-                                //prendo il nodo che mi dice il nome campionato
-                                By leghediv = By.ClassName("country___24Qe-aj");
-                                IWebElement legadiv = driver2.FindElement(leghediv);
-                                p.Paese = legadiv.Text.Split(':')[0];
-
-                                By leghe = By.TagName("a");
-                                IWebElement lega = legadiv.FindElement(leghe);
-                                p.Campionato = lega.Text;
-                                p.IdDiv = linkid.Replace("g_1_", "");
-
-                                //prendo le due immagini delle squadre che stanno giocando
-                                By linksdiv = By.ClassName("participantImage___2Oi0lJ_");
-                                ReadOnlyCollection<IWebElement> linkdiv = driver2.FindElements(linksdiv);
-                                By linkscasa = By.TagName("img");
-                                ReadOnlyCollection<IWebElement> linkcasa = linkdiv[0].FindElements(linkscasa);
-                                By linksfuori = By.TagName("img");
-                                ReadOnlyCollection<IWebElement> linkfuori = linkdiv[1].FindElements(linkscasa);
-                                p.LinkCasa = linkcasa[0].GetAttribute("src");
-                                p.LinkFuori = linkfuori[0].GetAttribute("src");
-
-                                //prendo le tab nel dettaglio (per cercare le odds)
-                                By groups1 = By.ClassName("tabs__tab");
-                                ReadOnlyCollection<IWebElement> group1 = driver2.FindElements(groups1);
-
-                                //prendo data e ora avvenimento
-                                By dataora = By.ClassName("startTime___2oy0czV");
-                                IWebElement dateora = driver2.FindElement(dataora);
-                                p.Data = dateora.Text.Split(' ')[0];
-
-
-                                for (int y = 0; y < group1.Count; y++)
-                                {
-                                    //apro le odds
-                                    if (group1[y].Text == "Odds")
+                                { 
+                                    try
                                     {
-                                        group1[y].Click();
-                                        Thread.Sleep(1000);
+                                        driver2 = new FirefoxDriver();
+                                        driver2.Manage().Window.Minimize();
+                                        driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
 
-                                        //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
-                                        By groups2 = By.ClassName("tabs__tab");
-                                        ReadOnlyCollection<IWebElement> group2 = driver2.FindElements(groups2);
+                                        timeout = 10000; /* Maximum wait time of 20 seconds */
+                                        wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
+                                        wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
 
 
-                                        for (int w = 0; w < group2.Count; w++)
+                                        //prendo il nodo che mi dice il nome campionato
+                                        By leghediv = By.ClassName("country___24Qe-aj");
+                                        IWebElement legadiv = driver2.FindElement(leghediv);
+                                        p.Paese = legadiv.Text.Split(':')[0];
+
+                                        By leghe = By.TagName("a");
+                                        IWebElement lega = legadiv.FindElement(leghe);
+                                        p.Campionato = lega.Text;
+                                        p.IdDiv = linkid.Replace("g_1_", "");
+
+                                        //prendo le due immagini delle squadre che stanno giocando
+                                        By linksdiv = By.ClassName("participantImage___2Oi0lJ_");
+                                        ReadOnlyCollection<IWebElement> linkdiv = driver2.FindElements(linksdiv);
+                                        By linkscasa = By.TagName("img");
+                                        ReadOnlyCollection<IWebElement> linkcasa = linkdiv[0].FindElements(linkscasa);
+                                        By linksfuori = By.TagName("img");
+                                        ReadOnlyCollection<IWebElement> linkfuori = linkdiv[1].FindElements(linkscasa);
+                                        p.LinkCasa = linkcasa[0].GetAttribute("src");
+                                        p.LinkFuori = linkfuori[0].GetAttribute("src");
+
+                                        //prendo le tab nel dettaglio (per cercare le odds)
+                                        By groups1 = By.ClassName("tabs__tab");
+                                        ReadOnlyCollection<IWebElement> group1 = driver2.FindElements(groups1);
+
+                                        //prendo data e ora avvenimento
+                                        By dataora = By.ClassName("startTime___2oy0czV");
+                                        IWebElement dateora = driver2.FindElement(dataora);
+                                        p.Data = dateora.Text.Split(' ')[0];
+                                        p.Quota_1 = 0;
+                                        p.Quota_X = 0;
+                                        p.Quota_2 = 0;
+                                        p.Quota_Over05 = 0;
+                                        p.Quota_Under05 = 0;
+                                        p.Quota_Over15 = 0;
+                                        p.Quota_Under15 = 0;
+                                        p.Quota_Over25 = 0;
+                                        p.Quota_Under25 = 0;
+                                        p.Quota_Over35 = 0;
+                                        p.Quota_Under35 = 0;
+                                        p.Quota_1X = 0;
+                                        p.Quota_12 = 0;
+                                        p.Quota_X2 = 0;
+                                        p.Quota_Goal = 0;
+                                        p.Quota_NoGoal = 0;
+                                        for (int y = 0; y < group1.Count; y++)
                                         {
-                                            if (group2[w].Text == "1X2 odds")
+                                            //apro le odds
+                                            if (group1[y].Text == "Odds")
                                             {
-                                                //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+                                                group1[y].Click();
+                                                Thread.Sleep(1000);
 
-                                                try
-                                                {
-                                                    p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_X = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex1)
-                                                {
-                                                    p.Quota_1 = 0;
-                                                    p.Quota_X = 0;
-                                                    p.Quota_2 = 0;
-                                                }
-                                            }
+                                                //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
+                                                By groups2 = By.ClassName("tabs__tab");
+                                                ReadOnlyCollection<IWebElement> group2 = driver2.FindElements(groups2);
 
-                                            //prendo tutti nodi con le quote under e over e popolo le prime 8 che trovo (da rivedere)
-                                            if (group2[w].Text == "O/U")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
 
-                                                try
+                                                for (int w = 0; w < group2.Count; w++)
                                                 {
-                                                    p.Quota_Over05 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture); p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
-                                                    p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex1)
-                                                {
-                                                    p.Quota_Over05 = 0;
-                                                    p.Quota_Under05 = 0;
-                                                    p.Quota_Over15 = 0;
-                                                    p.Quota_Under15 = 0;
-                                                    p.Quota_Over25 = 0;
-                                                    p.Quota_Under25 = 0;
-                                                    p.Quota_Over35 = 0;
-                                                    p.Quota_Under35 = 0;
-                                                }
-                                            }
+                                                    if (group2[w].Text == "1X2 odds")
+                                                    {
+                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
 
-                                            //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
-                                            if (group2[w].Text == "DC")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+                                                        try
+                                                        {
+                                                            p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_X = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            p.Quota_1 = 0;
+                                                            p.Quota_X = 0;
+                                                            p.Quota_2 = 0;
+                                                        }
+                                                    }
 
-                                                try
-                                                {
-                                                    p.Quota_1X = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_12 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_X2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
-                                                }
-                                                catch (Exception ex1)
-                                                {
-                                                    p.Quota_1X = 0;
-                                                    p.Quota_12 = 0;
-                                                    p.Quota_X2 = 0;
-                                                }
-                                            }
+                                                    //prendo tutti nodi con le quote under e over e popolo le prime 8 che trovo (da rivedere)
+                                                    if (group2[w].Text == "O/U")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
 
-                                            //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
-                                            if (group2[w].Text == "BTS")
-                                            {
-                                                group2[w].Click();
-                                                By prova = By.ClassName("odd___2vKX0U5");
-                                                ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+                                                        try
+                                                        {
+                                                            p.Quota_Over05 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture); p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
+                                                            p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            p.Quota_Over05 = 0;
+                                                            p.Quota_Under05 = 0;
+                                                            p.Quota_Over15 = 0;
+                                                            p.Quota_Under15 = 0;
+                                                            p.Quota_Over25 = 0;
+                                                            p.Quota_Under25 = 0;
+                                                            p.Quota_Over35 = 0;
+                                                            p.Quota_Under35 = 0;
+                                                        }
+                                                    }
 
-                                                try
-                                                {
-                                                    p.Quota_Goal = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
-                                                    p.Quota_NoGoal = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
+                                                    if (group2[w].Text == "DC")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_1X = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_12 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_X2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            p.Quota_1X = 0;
+                                                            p.Quota_12 = 0;
+                                                            p.Quota_X2 = 0;
+                                                        }
+                                                    }
+
+                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
+                                                    if (group2[w].Text == "BTS")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_Goal = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_NoGoal = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex)
+                                                        {
+                                                            p.Quota_Goal = 0;
+                                                            p.Quota_NoGoal = 0;
+                                                        }
+                                                    }
                                                 }
-                                                catch (Exception ex1)
-                                                {
-                                                    p.Quota_Goal = 0;
-                                                    p.Quota_NoGoal = 0;
-                                                }
+
+                                                //metto un break perchè ho già preso tutto ciò che mi interessa ignorando le altre tabs
+                                                break;
                                             }
                                         }
+                                        var scarica = verificaPartiteDaScaricare(linkid.Replace("g_1_", ""));
+                                        if (!scarica)
+                                        {
+                                            aggiornaInDatabase(p);
+                                        }
+                                        else
+                                        {
+                                            inserisciInDatabase(p);
+                                        }
 
-                                        //metto un break perchè ho già preso tutto ciò che mi interessa ignorando le altre tabs
-                                        break;
+
+                                        try
+                                        {
+                                            driver2.Quit();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            driver2.Quit();
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        try
+                                        {
+                                            driver2.Quit();
+                                        }
+                                        catch (Exception ex2)
+                                        {
+                                            driver2.Quit();
+                                        }
+                                        driver2 = new FirefoxDriver();
+                                        driver2.Manage().Window.Minimize();
+                                        driver2.Url = "https://www.flashscore.com/match/" + linkid.Replace("g_1_", "") + "/#match-summary/match-summary";
+
+                                        timeout = 10000; /* Maximum wait time of 20 seconds */
+                                        wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(timeout));
+                                        wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+
+
+                                        //prendo il nodo che mi dice il nome campionato
+                                        By leghediv = By.ClassName("country___24Qe-aj");
+                                        IWebElement legadiv = driver2.FindElement(leghediv);
+                                        p.Paese = legadiv.Text.Split(':')[0];
+
+                                        By leghe = By.TagName("a");
+                                        IWebElement lega = legadiv.FindElement(leghe);
+                                        p.Campionato = lega.Text;
+                                        p.IdDiv = linkid.Replace("g_1_", "");
+
+                                        //prendo le due immagini delle squadre che stanno giocando
+                                        By linksdiv = By.ClassName("participantImage___2Oi0lJ_");
+                                        ReadOnlyCollection<IWebElement> linkdiv = driver2.FindElements(linksdiv);
+                                        By linkscasa = By.TagName("img");
+                                        ReadOnlyCollection<IWebElement> linkcasa = linkdiv[0].FindElements(linkscasa);
+                                        By linksfuori = By.TagName("img");
+                                        ReadOnlyCollection<IWebElement> linkfuori = linkdiv[1].FindElements(linkscasa);
+                                        p.LinkCasa = linkcasa[0].GetAttribute("src");
+                                        p.LinkFuori = linkfuori[0].GetAttribute("src");
+
+                                        //prendo le tab nel dettaglio (per cercare le odds)
+                                        By groups1 = By.ClassName("tabs__tab");
+                                        ReadOnlyCollection<IWebElement> group1 = driver2.FindElements(groups1);
+
+                                        //prendo data e ora avvenimento
+                                        By dataora = By.ClassName("startTime___2oy0czV");
+                                        IWebElement dateora = driver2.FindElement(dataora);
+                                        p.Data = dateora.Text.Split(' ')[0];
+                                        p.Quota_1 = 0;
+                                        p.Quota_X = 0;
+                                        p.Quota_2 = 0;
+                                        p.Quota_Over05 = 0;
+                                        p.Quota_Under05 = 0;
+                                        p.Quota_Over15 = 0;
+                                        p.Quota_Under15 = 0;
+                                        p.Quota_Over25 = 0;
+                                        p.Quota_Under25 = 0;
+                                        p.Quota_Over35 = 0;
+                                        p.Quota_Under35 = 0;
+                                        p.Quota_1X = 0;
+                                        p.Quota_12 = 0;
+                                        p.Quota_X2 = 0;
+                                        p.Quota_Goal = 0;
+                                        p.Quota_NoGoal = 0;
+
+
+                                        for (int y = 0; y < group1.Count; y++)
+                                        {
+                                            //apro le odds
+                                            if (group1[y].Text == "Odds")
+                                            {
+                                                group1[y].Click();
+                                                Thread.Sleep(1000);
+
+                                                //adesso riprendo tutte le tab perchè dopo il click su odds ne sono comparse di nuove
+                                                By groups2 = By.ClassName("tabs__tab");
+                                                ReadOnlyCollection<IWebElement> group2 = driver2.FindElements(groups2);
+
+
+                                                for (int w = 0; w < group2.Count; w++)
+                                                {
+                                                    if (group2[w].Text == "1X2 odds")
+                                                    {
+                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_1 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_X = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex1)
+                                                        {
+                                                            p.Quota_1 = 0;
+                                                            p.Quota_X = 0;
+                                                            p.Quota_2 = 0;
+                                                        }
+                                                    }
+
+                                                    //prendo tutti nodi con le quote under e over e popolo le prime 8 che trovo (da rivedere)
+                                                    if (group2[w].Text == "O/U")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_Over05 = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under05 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Over15 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under15 = Double.Parse(prove[3].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Over25 = Double.Parse(prove[4].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under25 = Double.Parse(prove[5].Text, CultureInfo.InvariantCulture); p.Quota_Under25 = (float)Convert.ToDouble(prove[5].Text);
+                                                            p.Quota_Over35 = Double.Parse(prove[6].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_Under35 = Double.Parse(prove[7].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex1)
+                                                        {
+                                                            p.Quota_Over05 = 0;
+                                                            p.Quota_Under05 = 0;
+                                                            p.Quota_Over15 = 0;
+                                                            p.Quota_Under15 = 0;
+                                                            p.Quota_Over25 = 0;
+                                                            p.Quota_Under25 = 0;
+                                                            p.Quota_Over35 = 0;
+                                                            p.Quota_Under35 = 0;
+                                                        }
+                                                    }
+
+                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
+                                                    if (group2[w].Text == "DC")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_1X = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_12 = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_X2 = Double.Parse(prove[2].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex1)
+                                                        {
+                                                            p.Quota_1X = 0;
+                                                            p.Quota_12 = 0;
+                                                            p.Quota_X2 = 0;
+                                                        }
+                                                    }
+
+                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
+                                                    if (group2[w].Text == "BTS")
+                                                    {
+                                                        group2[w].Click();
+                                                        By prova = By.ClassName("odd___2vKX0U5");
+                                                        ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
+
+                                                        try
+                                                        {
+                                                            p.Quota_Goal = Double.Parse(prove[0].Text, CultureInfo.InvariantCulture);
+                                                            p.Quota_NoGoal = Double.Parse(prove[1].Text, CultureInfo.InvariantCulture);
+                                                        }
+                                                        catch (Exception ex1)
+                                                        {
+                                                            p.Quota_Goal = 0;
+                                                            p.Quota_NoGoal = 0;
+                                                        }
+                                                    }
+                                                }
+
+                                                //metto un break perchè ho già preso tutto ciò che mi interessa ignorando le altre tabs
+                                                break;
+                                            }
+                                        }
+                                        var scarica = verificaPartiteDaScaricare(linkid.Replace("g_1_", ""));
+                                        if (!scarica)
+                                        {
+                                            aggiornaInDatabase(p);
+                                        }
+                                        else
+                                        {
+                                            inserisciInDatabase(p);
+                                        }
+
+
+                                        try
+                                        {
+                                            driver2.Close();
+                                        }
+                                        catch (Exception ex1)
+                                        {
+                                            driver2.Close();
+                                        }
                                     }
                                 }
-                                var scarica = verificaPartiteDaScaricare(linkid.Replace("g_1_", ""));
-                                if (!scarica)
-                                {
-                                    aggiornaInDatabase(p);
-                                }
-                                else
-                                {
-                                    inserisciInDatabase(p);
-                                }
-
-
-                                try
-                                {
-                                    driver2.Quit();
-                                    driver2.Dispose();
-                                }
-                                catch (Exception ex1)
-                                {
-                                    driver2.Dispose();
-                                }
                             }
+                        }
+                    }
+                    By next = By.ClassName("calendar__direction--tomorrow");
+                    IWebElement nex = driver.FindElement(next);
+                    nex.Click();
 
-                            //}
+                    if (giorno == 7)
+                    {
+                        try
+                        {
+                            driver.Quit();
+                        }
+                        catch(Exception ex)
+                        {
+                            driver.Quit();
                         }
                     }
                 }
-                By next = By.ClassName("calendar__direction--tomorrow");
-                IWebElement nex = driver.FindElement(next);
-                nex.Click();
-
-                if (giorno == 6)
-                {
-                    close_Browser();
-                }
             }
+            while (1 == 1);
         }
 
-        public void inserisciInDatabase(Partita partita)
+            public void inserisciInDatabase(Partita partita)
         {
             SqlConnection connection;
             string connectionString;
@@ -666,7 +835,7 @@ namespace Scrape
                     SqlCommand command;
                     string query = "UPDATE Partita SET " +
                         "id_Lega = @id_Lega" +
-                        "Stato = @Stato" +
+                        ",Stato = @Stato" +
                         ",idDiv = @idDiv" +
                         ",NomeCasa = @NomeCasa" +
                         ",LinkCasa = @LinkCasa" +
@@ -691,7 +860,7 @@ namespace Scrape
                         "Quota_12 = @Quota_12" +
                         ",Quota_Goal = @Quota_Goal" +
                         ",Quota_NoGoal = @Quota_NoGoal" +
-                        " WHERE idDiv = '" + partita.IdDiv +  "'";
+                        " WHERE idDiv = '" + partita.IdDiv + "'";
                     command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@id_Lega", campionato);
                     command.Parameters.AddWithValue("@Stato", partita.Stato);
@@ -775,6 +944,7 @@ namespace Scrape
                 if (connection.State == ConnectionState.Open)
                 {
                     string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "'";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
+
                     SqlCommand command = new SqlCommand(query, connection);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -805,7 +975,9 @@ namespace Scrape
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    string query = " SELECT count(*) FROM Partita WHERE (Stato = 'IN_CORSO' OR Stato = 'DA_INIZIARE') AND (Data = '" + DateTime.Now.ToString("yyyy/MM/dd") + "') AND Orario <= '" + DateTime.Now.ToString("HH:mm") + "'";
+                    string query = " SELECT count(*) FROM Partita WHERE idDiv = '" + div + "' AND (Stato = 'IN_CORSO' OR Stato = 'DA_INIZIARE') AND ((Data = '" + DateTime.Now.ToString("yyyy/MM/dd") + "' AND Orario <= '" + DateTime.Now.ToString("HH:mm") + "') or Data < '" + DateTime.Now.ToString("yyyy/MM/dd") + "')";
+
+
                     //string query = " SELECT count(*) FROM Partita WHERE Stato = 'IN_CORSO' AND (Data <= '" + DateTime.Now.ToString("YYYY:MM:DD") + "')  OR (Stato = 'DA_INIZIARE' AND CAST(Orario AS TIME) <= " + DateTime.Now.ToString("HH:mm") + ")";
                     //string query = "SELECT count(*) FROM Partita WHERE idDiv = '" + div + "' AND (Orario <> 'Finished' OR Orario <> 'After Pen.')";// AND (Orario <> 'Finished' OR Orario <> 'After Pen.' OR Orario <> 'Postponed' OR Orario <> 'Cancelled')";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -825,6 +997,26 @@ namespace Scrape
             catch (Exception ex) { }
             connection.Close();
             return false;
+        }
+
+        public void pulisci()
+        {
+            SqlConnection connection;
+            string connectionString;
+            connectionString = @"Data Source=pinexp.ns0.it\MIOSERVER,65004;" + "Initial Catalog=Soccer;" + @"User id=sa;" + "Password=Pinexp93;";
+            connection = new SqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    string query = "DELETE FROM Partita WHERE Data < '" + DateTime.Now.AddDays(-7).ToString("yyyy/MM/dd") + "'";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex) { }
+            connection.Close();
         }
 
         public void close_Browser()
