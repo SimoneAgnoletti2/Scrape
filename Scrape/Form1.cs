@@ -20,7 +20,7 @@ namespace Scrape
         }
         private void Live_Click(object sender, EventArgs e)
         {
-            getLive fd = new getLive();
+            getPartite fd = new getPartite();
             List<Partita> partite = new List<Partita>();
             fd.live();
         }

@@ -228,9 +228,6 @@ namespace Scrape
                         var linkid = link[i].GetAttribute("id");
 
 
-                        if ("Oprz1aZu" == linkid.Replace("g_1_", ""))
-                        {
-                        }
                         if (!orari[i].Ora.Contains("FRO"))
                         {
                             if (!PartitaDaScaricare(linkid.Replace("g_1_", "")) || verificaPartiteDaScaricare(linkid.Replace("g_1_", "")))
@@ -316,10 +313,10 @@ namespace Scrape
                                     }
 
                                     //if (p.Risultato == "-" || p.Orario == "Finished" || p.Orario == "After Pen.")
-                                    //{ 
+                                    //{
                                 }
                                 else
-                                { 
+                                {
                                     try
                                     {
                                         driver2 = new FirefoxDriver();
@@ -392,7 +389,7 @@ namespace Scrape
                                                 {
                                                     if (group2[w].Text == "1X2 odds")
                                                     {
-                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
+                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo
                                                         By prova = By.ClassName("odd___2vKX0U5");
                                                         ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
 
@@ -441,7 +438,7 @@ namespace Scrape
                                                         }
                                                     }
 
-                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
+                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo
                                                     if (group2[w].Text == "DC")
                                                     {
                                                         group2[w].Click();
@@ -462,7 +459,7 @@ namespace Scrape
                                                         }
                                                     }
 
-                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
+                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo
                                                     if (group2[w].Text == "BTS")
                                                     {
                                                         group2[w].Click();
@@ -588,7 +585,7 @@ namespace Scrape
                                                 {
                                                     if (group2[w].Text == "1X2 odds")
                                                     {
-                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo 
+                                                        //prendo tutti nodi con le quote 1 x 2 e popolo le prime 3 quote che trovo
                                                         By prova = By.ClassName("odd___2vKX0U5");
                                                         ReadOnlyCollection<IWebElement> prove = driver2.FindElements(prova);
 
@@ -637,7 +634,7 @@ namespace Scrape
                                                         }
                                                     }
 
-                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo 
+                                                    //prendo tutti nodi con le quote doppie chance e popolo le prime 3 quote che trovo
                                                     if (group2[w].Text == "DC")
                                                     {
                                                         group2[w].Click();
@@ -658,7 +655,7 @@ namespace Scrape
                                                         }
                                                     }
 
-                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo 
+                                                    //prendo tutti nodi con le quote goal nogoal e popolo le prime 2 quote che trovo
                                                     if (group2[w].Text == "BTS")
                                                     {
                                                         group2[w].Click();
@@ -716,7 +713,7 @@ namespace Scrape
                         {
                             driver.Quit();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             driver.Quit();
                         }
@@ -726,7 +723,7 @@ namespace Scrape
             while (1 == 1);
         }
 
-            public void inserisciInDatabase(Partita partita)
+        public void inserisciInDatabase(Partita partita)
         {
             SqlConnection connection;
             string connectionString;
@@ -1048,3 +1045,4 @@ namespace Scrape
         }
     }
 }
+
