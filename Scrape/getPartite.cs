@@ -63,72 +63,72 @@ namespace Scrape
                 IWebElement pre = driver.FindElement(prev);
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 try
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
                 catch (Exception ex)
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(2000);
                     pre.Click();
                 }
 
@@ -503,11 +503,12 @@ namespace Scrape
                                     }
                                 }
                             }
-                            By next = By.ClassName("calendar__direction--tomorrow");
-                            IWebElement nex = driver.FindElement(next);
-                            nex.Click();
+                            
                         }
                     }
+                    By next = By.ClassName("calendar__direction--tomorrow");
+                    IWebElement nex = driver.FindElement(next);
+                    nex.Click();
                 }
             }
             while (1 == 1);
@@ -605,21 +606,7 @@ namespace Scrape
             if (connection.State == ConnectionState.Open)
             {
                 int campionato = 0;
-                foreach (var nomelega in paeselega)
-                {
-                    if (partita.Campionato == nomelega.Campionato && partita.Paese.ToLower() == nomelega.Paese.ToLower())
-                    {
-                        campionato = nomelega.IdCampionato;
-                    }
-                    else if (partita.Campionato.Contains(nomelega.Campionato) && partita.Paese.ToLower() == nomelega.Paese.ToLower())
-                    {
-                        campionato = nomelega.IdCampionato;
-                    }
-                    else if (nomelega.Campionato.Contains(partita.Campionato) && partita.Paese.ToLower() == nomelega.Paese.ToLower())
-                    {
-                        campionato = nomelega.IdCampionato;
-                    }
-                }
+                
                 SqlCommand command;
                 string query = "UPDATE Partita SET " +
                     ",Stato = @Stato" +
